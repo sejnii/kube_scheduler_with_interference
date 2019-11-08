@@ -1,0 +1,17 @@
+# Default values for gpushare-installer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+masterCount: 3
+
+kubeVersion: v1.12.6-aliyun.1
+
+schdInstallerImage: registry.cn-hangzhou.aliyuncs.com/acs/schd-extender-deployer:201905310913
+
+evictDevicePluginImage: registry.cn-hangzhou.aliyuncs.com/acs/nvidia-device-plugin-evict:201905310913
+
+recoverDevicePluginImage: registry.cn-hangzhou.aliyuncs.com/acs/nvidia-device-plugin-recover:201907170823
+
+extenderImage: registry.cn-hangzhou.aliyuncs.com/acs/k8s-gpushare-schd-extender:1.11-d170d8a
+
+devicePluginImage: registry.cn-hangzhou.aliyuncs.com/acs/k8s-gpushare-plugin:v2-1.11-aff8a23
