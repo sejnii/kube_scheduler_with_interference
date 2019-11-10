@@ -3,7 +3,7 @@ package cache
 import (
 	"log"
 	"sync"
-
+	"k8s.io/api/core/v1"
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
 	"k8s.io/apimachinery/pkg/types"
 )
