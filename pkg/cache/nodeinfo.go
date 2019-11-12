@@ -285,7 +285,7 @@ func (n *NodeInfo) getAllGPUs() (allGPUs map[int]uint) {
 
 // device index : number of pods
 func (n *NodeInfo) getAllGPUNumPods() map[int]int {
-	allGPUNumPods = map[int]uint{}
+	allGPUNumPods := map[int]int{}
 	for _, dev := range n.devs {
 		allGPUNumPods[dev.idx] = dev.GetNumPods()
 	}
