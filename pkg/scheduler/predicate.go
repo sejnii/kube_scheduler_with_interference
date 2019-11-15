@@ -4,6 +4,8 @@ import (
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
 	"k8s.io/api/core/v1"
+	"log"
+
 )
 
 type Predicate struct {
@@ -30,6 +32,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 			if result {
 				nodeinfo, _ := p.cache.GetNodeInfo(nodeName)
 				zeroPodGPU, possibleGPU, totalPodGPU := nodeinfo.AssumeWithNumPods()
+				log.Println("debug: zeroPodGpu - ", zeroPodGPU, ", possibleGPU - ",possibleGPU, ", totalPodGPU - " , totalPodGPU)
 				if zeroPodGPU == true {
 					selected = nodeName
 				} else {
