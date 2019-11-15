@@ -82,3 +82,35 @@ func (d *DeviceInfo) removePod(pod *v1.Pod) {
 		d.podMap,
 		d)
 }
+
+// return assinged applications(device info - pod map) in device as integer values
+func (d *DeviceInfo) getContainersinDev() devcontainers [] int{
+	var devcontainers [] int
+	for _, pod := range d.podMap {
+		containers := pod.Spec.Containers
+		for _, container := range containers{
+			if container.Name=="lammps"{
+				append(devcontainers, LAMMPS)
+			} else if container.Name=="gromacs"{
+				append(devcontainers, GROMACS)
+			} else if container.Name=="hoomd"{
+				append(devcontainers, HOOMD)
+			} else if container.Name=="qmcpack"{
+				append(devcontainers, QMCPACK)
+			} else if container.Name=="cnn"{
+				append(devcontainers, CNN)
+			} else if container.Name=="google"{
+				append(devcontainers, Google)
+			} else if container.Name=="alex"{
+				append(devcontainers, alex)
+			} else if container.Name=="vgg16"{
+				append(devcontainers, VGG16)
+			} else if container.Name=="vgg11"{
+				append(devcontainers, VGG11)
+			}
+
+
+
+		}
+	}
+}

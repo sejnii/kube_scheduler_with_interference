@@ -2,8 +2,8 @@ package scheduler
 
 import (
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
+	v1 "k8s.io/api/core/v1"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
-	"k8s.io/api/core/v1"
 )
 
 type Predicate struct {
@@ -19,7 +19,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	canNotSchedule := make(map[string]string)
 	//zeroPodNode := make(map[string]int)
 	onePodNode := make(map[string]int)
-	checkZeroPodNode := false
+	checkZeroPodNode := false // if there is zero-pod node, it would be true
 	checkOnePodNode := false
 	var selected string
 	for _, nodeName := range nodeNames {
@@ -32,6 +32,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 				zeroPodGPU, possibleGPU, totalPodGPU := nodeinfo.AssumeWithNumPods()
 				if zeroPodGPU == true {
 					selected = nodeName
+					checkZeroPodNode = true
 				} else {
 					if possibleGPU == true {
 						onePodNode[nodeName] = totalPodGPU
@@ -44,8 +45,8 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	}
 
 	min := 9999
-	if checkZeroPodNode == false {
-		if checkOnePodNode == true { //here has to be changed in second version.
+	if checkZeroPodNode == false { // there is no zero-pod node
+		if checkOnePodNode == true { // but there is one-pod node
 			for nName, value := range onePodNode {
 				if min < value {
 					min = value
