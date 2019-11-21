@@ -5,7 +5,8 @@ import (
 	"sync"
 
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
-	"k8s.io/api/core/v1"
+	"github.com/sejnii/kube_scheduler_with_interference/pkg/utils"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	corelisters "k8s.io/client-go/listers/core/v1"
@@ -25,15 +26,19 @@ type SchedulerCache struct {
 	// record the knownPod, it will be added when annotation ALIYUN_GPU_ID is added, and will be removed when complete and deleted
 	knownPods map[types.UID]*v1.Pod
 	nLock     *sync.RWMutex
+
+	// interference value : interference [foreground_app][backgroud_app]
+	interference map[string]map[string]float64
 }
 
 func NewSchedulerCache(nLister corelisters.NodeLister, pLister corelisters.PodLister) *SchedulerCache {
 	return &SchedulerCache{
-		nodes:      make(map[string]*NodeInfo),
-		nodeLister: nLister,
-		podLister:  pLister,
-		knownPods:  make(map[types.UID]*v1.Pod),
-		nLock:      new(sync.RWMutex),
+		nodes:        make(map[string]*NodeInfo),
+		nodeLister:   nLister,
+		podLister:    pLister,
+		knownPods:    make(map[types.UID]*v1.Pod),
+		nLock:        new(sync.RWMutex),
+		interference: GetInterferenceMap(),
 	}
 }
 
@@ -43,6 +48,11 @@ func (cache *SchedulerCache) GetNodeinfos() []*NodeInfo {
 		nodes = append(nodes, n)
 	}
 	return nodes
+}
+
+func (cache *SchedulerCache) GetInterferenceValue(int foreground, int background) float64 {
+	val := interference[foreground][background]
+	return val
 }
 
 // build cache when initializing

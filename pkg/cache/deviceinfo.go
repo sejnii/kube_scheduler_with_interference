@@ -3,8 +3,9 @@ package cache
 import (
 	"log"
 	"sync"
-	"k8s.io/api/core/v1"
+
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
 
@@ -84,33 +85,32 @@ func (d *DeviceInfo) removePod(pod *v1.Pod) {
 }
 
 // return assinged applications(device info - pod map) in device as integer values
-func (d *DeviceInfo) getContainersinDev() devcontainers [] int{
-	var devcontainers [] int
+func (d *DeviceInfo) getContainersinDev() (devcontainers []int) {
+	var devcontainers []int
 	for _, pod := range d.podMap {
 		containers := pod.Spec.Containers
-		for _, container := range containers{
-			if container.Name=="lammps"{
+		for _, container := range containers {
+			if container.Name == "lammps" {
 				append(devcontainers, LAMMPS)
-			} else if container.Name=="gromacs"{
+			} else if container.Name == "gromacs" {
 				append(devcontainers, GROMACS)
-			} else if container.Name=="hoomd"{
+			} else if container.Name == "hoomd" {
 				append(devcontainers, HOOMD)
-			} else if container.Name=="qmcpack"{
+			} else if container.Name == "qmcpack" {
 				append(devcontainers, QMCPACK)
-			} else if container.Name=="cnn"{
+			} else if container.Name == "cnn" {
 				append(devcontainers, CNN)
-			} else if container.Name=="google"{
+			} else if container.Name == "google" {
 				append(devcontainers, Google)
-			} else if container.Name=="alex"{
+			} else if container.Name == "alex" {
 				append(devcontainers, alex)
-			} else if container.Name=="vgg16"{
+			} else if container.Name == "vgg16" {
 				append(devcontainers, VGG16)
-			} else if container.Name=="vgg11"{
+			} else if container.Name == "vgg11" {
 				append(devcontainers, VGG11)
 			}
-
-
-
 		}
 	}
+	return
+
 }

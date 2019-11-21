@@ -5,8 +5,6 @@ import (
 	"log"
 	"strconv"
 	"time"
-
-	"k8s.io/api/core/v1"
 )
 
 // AssignedNonTerminatedPod selects pods that are assigned and non-terminal (scheduled and running).
@@ -203,4 +201,33 @@ func GetUpdatedPodAnnotationSpec(oldPod *v1.Pod, devId int, totalGPUMemByDev int
 	newPod.ObjectMeta.Annotations[EnvResourceAssumeTime] = fmt.Sprintf("%d", now.UnixNano())
 
 	return newPod
+}
+
+func GetContainerID(pod *v1.Pod) int { //suppose one container per pod
+
+	containers := pod.Spec.Containers
+	for _, container := range containers {
+		if container.Name == "lammps" {
+			return LAMMPS
+		} else if container.Name == "gromacs" {
+			return GROMACS
+		} else if container.Name == "hoomd" {
+			return HOOMD
+		} else if container.Name == "qmcpack" {
+			return QMCPACK
+		} else if container.Name == "cnn" {
+			return CNN
+		} else if container.Name == "google" {
+			return Google
+		} else if container.Name == "alex" {
+			return Alex
+		} else if container.Name == "vgg16" {
+			return VGG16
+		} else if container.Name == "vgg11" {
+			return VGG11
+		}
+		return -1
+
+	}
+
 }

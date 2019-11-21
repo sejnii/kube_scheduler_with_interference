@@ -6,7 +6,6 @@ import (
 
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
-	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -150,7 +149,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 
 	log.Printf("info: Starting %v workers.", threadiness)
 	for i := 0; i < threadiness; i++ {
-		go wait.Until(c.runWorker, time.Second, stopCh)
+		go wait.Until(c.runWorker, time.Millisecond, stopCh)
 	}
 
 	log.Println("info: Started workers")

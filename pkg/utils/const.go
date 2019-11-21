@@ -11,6 +11,7 @@ const (
 	EnvAssignedFlag       = "ALIYUN_COM_GPU_MEM_ASSIGNED"
 	EnvResourceAssumeTime = "ALIYUN_COM_GPU_MEM_ASSUME_TIME"
 
+	// container id
 	LAMMPS  = 0
 	GROMACS = 1
 	HOOMD   = 2
@@ -19,5 +20,5 @@ const (
 	Google  = 5
 	Alex    = 6
 	VGG16   = 7
-	VGG17   = 8
+	VGG11   = 8
 )

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"k8s.io/api/core/v1"
+
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -284,25 +285,33 @@ func (n *NodeInfo) getAllGPUs() (allGPUs map[int]uint) {
 }
 
 // device index : number of pods
-func (n *NodeInfo) getAllGPUNumPods() map[int]int {
+func (n *NodeInfo) getAllGPUNumPods() (map[int]int, int) {
 	allGPUNumPods := map[int]int{}
-	count := 0
+	count := 0      // variable for considering only one device
+	container := -1 // container id -> default value is -1 (it is assigned only when a node is an one-pod node)
 	for _, dev := range n.devs {
-		if count >= 1{
+		if count >= 1 {
 			break
 		}
-		allGPUNumPods[dev.idx] = dev.GetNumPods()
+		num := dev.GetNumPods()
+		allGPUNumPods[dev.idx] = num
+		if num == 1 {
+			containers := dev.getContainersinDev() // it may return slice
+			container = containers[0]              // if dev has only one pod - get container id of the pod
+		}
 		count = count + 1
 	}
 	log.Printf("debug: getAllGPUNumPods: %v in node %s, and dev %v", allGPUNumPods, n.name, n.devs)
-	return allGPUNumPods
+	return allGPUNumPods, container
 }
 
+// return value - boolean : whether it is zero pod node , boolean : whether it is one pod node, int : if it is one pod node, return container id(default : -1)
 func (n *NodeInfo) AssumeWithNumPods() (bool, bool, int) {
-	allGPUNumPods := n.getAllGPUNumPods()
+	// allGPUNumPods -> [devid] : numpod
+	allGPUNumPods, containerID := n.getAllGPUNumPods()
 	zeroPodGPU := false
 	possibleGPU := false
-	totalPodGPU := 0
+	totalPodGPU := 0 // it may not used in this version (1 gpu per a node)
 	//for each GPU in a node -> check if there is zeroPodGPU(gpu with zero pod) or possibleGPU(gpu with zero or one pod) and calculate total pod in node
 	for _, value := range allGPUNumPods {
 		if value == 0 {
@@ -314,5 +323,5 @@ func (n *NodeInfo) AssumeWithNumPods() (bool, bool, int) {
 		totalPodGPU += value
 	}
 
-	return zeroPodGPU, possibleGPU, totalPodGPU
+	return zeroPodGPU, possibleGPU, containerID
 }
