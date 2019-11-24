@@ -85,32 +85,32 @@ func (d *DeviceInfo) removePod(pod *v1.Pod) {
 }
 
 // return assinged applications(device info - pod map) in device as integer values
-func (d *DeviceInfo) getContainersinDev() (devcontainers []int) {
-	var devcontainers []int
+func (d *DeviceInfo) getContainersinDev() []int{
+	devcontainers := []int{}
 	for _, pod := range d.podMap {
 		containers := pod.Spec.Containers
 		for _, container := range containers {
 			if container.Name == "lammps" {
-				append(devcontainers, LAMMPS)
+				devcontainers = append(devcontainers, LAMMPS)
 			} else if container.Name == "gromacs" {
-				append(devcontainers, GROMACS)
+				devcontainers = append(devcontainers, GROMACS)
 			} else if container.Name == "hoomd" {
-				append(devcontainers, HOOMD)
+				devcontainers = append(devcontainers, HOOMD)
 			} else if container.Name == "qmcpack" {
-				append(devcontainers, QMCPACK)
+				devcontainers = append(devcontainers, QMCPACK)
 			} else if container.Name == "cnn" {
-				append(devcontainers, CNN)
+				devcontainers = append(devcontainers, CNN)
 			} else if container.Name == "google" {
-				append(devcontainers, Google)
+				devcontainers = append(devcontainers, Google)
 			} else if container.Name == "alex" {
-				append(devcontainers, alex)
+				devcontainers = append(devcontainers, Alex)
 			} else if container.Name == "vgg16" {
-				append(devcontainers, VGG16)
+				devcontainers = append(devcontainers, VGG16)
 			} else if container.Name == "vgg11" {
-				append(devcontainers, VGG11)
+				devcontainers = append(devcontainers, VGG11)
 			}
 		}
 	}
-	return
+	return devcontainers
 
 }

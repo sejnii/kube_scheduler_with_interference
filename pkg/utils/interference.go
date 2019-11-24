@@ -3,9 +3,13 @@ package utils
 import (
 	"encoding/json"
 	"os"
+
 )
 
-func GetInterferenceMap() map[string]map[string]float64 {
+
+
+
+func GetInterferenceMap() map[int]map[int]float64 {
 
 	file, _ := os.Open("interference.json")
 	fi, _ := file.Stat()
@@ -14,7 +18,7 @@ func GetInterferenceMap() map[string]map[string]float64 {
 
 	interferenceTmp := make(map[string]map[string]float64)
 	json.Unmarshal(data, &interferenceTmp)
-
+	interference := make(map[int]map[int]float64)
 	for foreApp, backApps := range interferenceTmp {
 		fore := strToID(foreApp)
 		tmp := make(map[int]float64)

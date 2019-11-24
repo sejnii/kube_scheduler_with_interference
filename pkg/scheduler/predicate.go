@@ -2,10 +2,11 @@ package scheduler
 
 import (
 	"sort"
-
+	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
+//	queue "k8s.io/kubernetes/pkg/scheduler"
 )
 
 type Predicate struct {
@@ -58,13 +59,14 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		if checkOnePodNode == true { // but there is one-pod node
 			pendingApp := make(map[int]bool) //pendingAPP ID + visited(bool) map
 			runningApp := make(map[int]bool)
-			pendingPods := PendingPods()
+			pendingPods := p.cache.GetPendingPods()
+
 			candidate := make([]interferencePair, 0)
-			for pPod := range pendingPods {
-				pendingID = GetContainerID(pPod)
+			for _, pPod := range pendingPods {
+				pendingID := utils.GetContainerID(pPod)
 				pendingApp[pendingID] = false // visited array for pending pod
 				for runningPod := range onePodNode {
-					append(candidate, interferencePair{pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID) + p.cache.GetInterferenceValue(pendingID, runningPod)})
+					candidate = append(candidate, interferencePair{pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID) + p.cache.GetInterferenceValue(pendingID, runningPod)})
 					runningApp[runningPod] = false
 				}
 
@@ -83,7 +85,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 			}
 
 			//result에 현재 pod이 있으면 그 때의 nodeName을 selected에 넣으면됑
-			currentPod := GetContainerID(pod)
+			currentPod := utils.GetContainerID(pod)
 			for _, pair := range result {
 				if pair.foreground == currentPod {
 					selected = onePodNodeName[pair.background]

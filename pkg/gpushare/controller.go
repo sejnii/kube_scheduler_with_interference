@@ -16,7 +16,7 @@ import (
 	"k8s.io/client-go/util/workqueue"
 
 	"log"
-
+	v1 "k8s.io/api/core/v1"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/record"

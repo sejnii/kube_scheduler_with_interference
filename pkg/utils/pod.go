@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	v1 "k8s.io/api/core/v1"
 	"time"
+
 )
 
 // AssignedNonTerminatedPod selects pods that are assigned and non-terminal (scheduled and running).
@@ -226,8 +228,8 @@ func GetContainerID(pod *v1.Pod) int { //suppose one container per pod
 		} else if container.Name == "vgg11" {
 			return VGG11
 		}
-		return -1
 
 	}
+	return -1
 
 }
