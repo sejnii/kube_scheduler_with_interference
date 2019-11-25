@@ -3,19 +3,22 @@ package utils
 import (
 	"encoding/json"
 	"os"
-
+	"log"
 )
 
 
 
 
 func GetInterferenceMap() map[int]map[int]float64 {
-
-	file, _ := os.Open("interference.json")
+	path,_ := os.Getwd()
+	log.Printf("pwd %v", path)
+	file, err := os.Open("/data/interference.json")
+	if err != nil{
+		log.Printf("json file reading fail %v", err)
+	}
 	fi, _ := file.Stat()
 	var data = make([]byte, fi.Size())
 	file.Read(data)
-
 	interferenceTmp := make(map[string]map[string]float64)
 	json.Unmarshal(data, &interferenceTmp)
 	interference := make(map[int]map[int]float64)
