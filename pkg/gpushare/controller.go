@@ -173,6 +173,7 @@ func (c *Controller) runWorker() {
 func (c *Controller) syncPod(key string) (forget bool, err error) {
 	ns, name, err := clientgocache.SplitMetaNamespaceKey(key)
 	log.Printf("debug: begin to sync gpushare pod %s in ns %s", name, ns)
+
 	if err != nil {
 		return false, err
 	}
@@ -206,13 +207,20 @@ func (c *Controller) syncPod(key string) (forget bool, err error) {
 // processNextWorkItem will read a single work item off the podQueue and
 // attempt to process it.
 func (c *Controller) processNextWorkItem() bool {
+
 	log.Println("begin processNextWorkItem()")
+	startTime := time.Now()
+	log.Printf("debug : begin processNextWorkItem() time is = %s", startTime)
 	key, quit := c.podQueue.Get()
 	if quit {
 		return false
 	}
 	defer c.podQueue.Done(key)
 	defer log.Println("end processNextWorkItem()")
+	defer elapsedTime := time.Since(startTime)
+	defer log.Printf("debug : begin ~ end processNextWorkItem time is = %s", elapsedTime)
+	defer endTime := time.Now()
+	defer log.Printf("debug : end processNextWorkItem time is = %s", endTime)
 	forget, err := c.syncPod(key.(string))
 	if err == nil {
 		// log.Printf("Error syncing pods: %v", err)
