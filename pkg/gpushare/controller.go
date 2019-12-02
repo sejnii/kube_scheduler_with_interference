@@ -24,6 +24,7 @@ import (
 
 var (
 	KeyFunc = clientgocache.DeletionHandlingMetaNamespaceKeyFunc
+	startTime time.Time
 )
 
 type Controller struct {
@@ -195,6 +196,12 @@ func (c *Controller) syncPod(key string) (forget bool, err error) {
 			c.schedulerCache.RemovePod(pod)
 		} else {
 			err := c.schedulerCache.AddOrUpdatePod(pod)
+
+			elapsedTime := time.Since(startTime)
+			log.Printf("debug : begin processNextWorkItem ~ addorupdatepod end  time is = %s", elapsedTime)
+			endTime := time.Now()
+			log.Printf("debug : addorupdatepod end time is = %s", endTime)
+
 			if err != nil {
 				return false, err
 			}
@@ -204,12 +211,21 @@ func (c *Controller) syncPod(key string) (forget bool, err error) {
 	return true, nil
 }
 
+func printDuration(t time.Time) {
+	elapsedTime := time.Since(startTime)
+	log.Printf("debug : begin ~ end processNextWorkItem time is = %s", elapsedTime)
+}
+func printNow(){
+	endTime := time.Now()
+        log.Printf("debug : end processNextWorkItem time is = %s", endTime)
+
+}
 // processNextWorkItem will read a single work item off the podQueue and
 // attempt to process it.
 func (c *Controller) processNextWorkItem() bool {
 
 	log.Println("begin processNextWorkItem()")
-	startTime := time.Now()
+	startTime = time.Now()
 	log.Printf("debug : begin processNextWorkItem() time is = %s", startTime)
 	key, quit := c.podQueue.Get()
 	if quit {
@@ -217,10 +233,8 @@ func (c *Controller) processNextWorkItem() bool {
 	}
 	defer c.podQueue.Done(key)
 	defer log.Println("end processNextWorkItem()")
-	defer elapsedTime := time.Since(startTime)
-	defer log.Printf("debug : begin ~ end processNextWorkItem time is = %s", elapsedTime)
-	defer endTime := time.Now()
-	defer log.Printf("debug : end processNextWorkItem time is = %s", endTime)
+	defer printDuration(startTime)
+	defer printNow()
 	forget, err := c.syncPod(key.(string))
 	if err == nil {
 		// log.Printf("Error syncing pods: %v", err)
