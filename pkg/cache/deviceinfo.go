@@ -85,7 +85,7 @@ func (d *DeviceInfo) removePod(pod *v1.Pod) {
 }
 
 // return assinged applications(device info - pod map) in device as integer values
-func (d *DeviceInfo) getContainersinDev() []int{
+func (d *DeviceInfo) getContainersinDev() []int {
 	devcontainers := []int{}
 	for _, pod := range d.podMap {
 		containers := pod.Spec.Containers
@@ -108,7 +108,14 @@ func (d *DeviceInfo) getContainersinDev() []int{
 				devcontainers = append(devcontainers, VGG16)
 			} else if container.Name == "vgg11" {
 				devcontainers = append(devcontainers, VGG11)
+			} else if container.Name == "classification" {
+				devcontainers = append(devcontainers, Classification)
+			} else if container.Name == "regression" {
+				devcontainers = append(devcontainers, Regression)
+			} else if container.Name == "multiout" {
+				devcontainers = append(devcontainers, Multiout)
 			}
+
 		}
 	}
 	return devcontainers

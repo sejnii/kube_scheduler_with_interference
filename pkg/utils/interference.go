@@ -2,18 +2,15 @@ package utils
 
 import (
 	"encoding/json"
-	"os"
 	"log"
+	"os"
 )
 
-
-
-
 func GetInterferenceMap() map[int]map[int]float64 {
-	path,_ := os.Getwd()
+	path, _ := os.Getwd()
 	log.Printf("pwd %v", path)
 	file, err := os.Open("/data/interference.json")
-	if err != nil{
+	if err != nil {
 		log.Printf("json file reading fail %v", err)
 	}
 	fi, _ := file.Stat()
@@ -55,6 +52,12 @@ func strToID(s string) int {
 		return VGG16
 	} else if s == "vgg11" {
 		return VGG11
+	} else if s == "classification" {
+		return Classification
+	} else if s == "regression" {
+		return Regression
+	} else if s == "multiout" {
+		return Multiout
 	}
 	return -1
 
