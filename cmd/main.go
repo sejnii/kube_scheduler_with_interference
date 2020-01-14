@@ -25,7 +25,7 @@ const RecommendedKubeConfigPathEnv = "KUBECONFIG"
 
 var (
 	clientset    *kubernetes.Clientset
-	resyncPeriod = 30 * time.Second
+	resyncPeriod = time.Second
 	clientConfig clientcmd.ClientConfig
 )
 

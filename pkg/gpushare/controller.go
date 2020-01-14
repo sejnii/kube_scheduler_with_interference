@@ -150,7 +150,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 
 	log.Printf("info: Starting %v workers.", threadiness)
 	for i := 0; i < threadiness; i++ {
-		go wait.Until(c.runWorker, time.Millisecond, stopCh)
+		go wait.Until(c.runWorker, time.Second, stopCh)
 	}
 
 	log.Println("info: Started workers")
