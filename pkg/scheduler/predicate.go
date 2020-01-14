@@ -70,9 +70,9 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 					runningApp[runningPod] = false
 				}
 
-			} //candidate struct: runningPod in onepodnode, pendingPod, sum of interference value
+			} // mystic select the largest value (the larger value, the more different metric vector)
 			sort.Slice(candidate, func(i, j int) bool {
-				return (candidate[i].value < candidate[j].value)
+				return (candidate[i].value > candidate[j].value)
 			})
 			result := make([]interferencePair, 0)
 
