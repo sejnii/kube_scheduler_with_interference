@@ -1,13 +1,9 @@
 package scheduler
 
 import (
-	"sort"
-	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
-	"k8s.io/api/core/v1"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
-//	queue "k8s.io/kubernetes/pkg/scheduler"
-	"log"
+	//	queue "k8s.io/kubernetes/pkg/scheduler"
 )
 
 type Predicate struct {
@@ -45,61 +41,14 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 					selected = nodeName
 					checkZeroPodNode = true
 				} else {
-					if possibleGPU == true {
-						onePodNode[containerID] = false // visited array for running pod in one pod node
-						onePodNodeName[containerID] = nodeName
-						checkOnePodNode = true
+					if possibleGPU == true { // mean - one pod node
+						canSchedule = append(canSchedule, nodeName)
 					}
 				}
 				//
 			}
 		}
 	}
-
-	if checkZeroPodNode == false { // there is no zero-pod node
-		if checkOnePodNode == true { // but there is one-pod node
-			pendingApp := make(map[int]bool) //pendingAPP ID + visited(bool) map
-			runningApp := make(map[int]bool)
-			pendingPods := p.cache.GetPendingPods()
-
-			candidate := make([]interferencePair, 0)
-			for _, pPod := range pendingPods {
-				pendingID := utils.GetContainerID(pPod)
-				pendingApp[pendingID] = false // visited array for pending pod
-				for runningPod := range onePodNode {
-					candidate = append(candidate, interferencePair{pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID) + p.cache.GetInterferenceValue(pendingID, runningPod)})
-					runningApp[runningPod] = false
-					log.Println("predicate : 71 - for loop", pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID))
-				}
-
-			} // mystic select the largest value (the larger value, the more different metric vector)
-			sort.Slice(candidate, func(i, j int) bool {
-				return (candidate[i].value > candidate[j].value)
-			})
-			result := make([]interferencePair, 0)
-			log.Println("predicate: 79 - sorted candidate", candidate)
-			for _, pair := range candidate {
-				if pendingApp[pair.foreground] != true && runningApp[pair.background] != true && pair.value != -2 {
-					result = append(result, pair)
-					pendingApp[pair.foreground] = true
-					runningApp[pair.background] = true
-				}
-			}
-
-			//result에 현재 pod이 있으면 그 때의 nodeName을 selected에 넣으면됑
-			currentPod := utils.GetContainerID(pod)
-			for _, pair := range result {
-				if pair.foreground == currentPod {
-					selected = onePodNodeName[pair.background]
-					break
-				}
-			}
-
-		}
-
-	}
-
-	canSchedule = append(canSchedule, selected)
 
 	result := schedulerapi.ExtenderFilterResult{
 		NodeNames:   &canSchedule,

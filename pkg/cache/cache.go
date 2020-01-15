@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
-//	"github.com/sejnii/kube_scheduler_with_interference/pkg/utils"
+	//	"github.com/sejnii/kube_scheduler_with_interference/pkg/utils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
@@ -26,9 +26,6 @@ type SchedulerCache struct {
 	// record the knownPod, it will be added when annotation ALIYUN_GPU_ID is added, and will be removed when complete and deleted
 	knownPods map[types.UID]*v1.Pod
 	nLock     *sync.RWMutex
-
-	// interference value : interference [foreground_app][backgroud_app]
-	interference map[int]map[int]float64
 }
 
 func NewSchedulerCache(nLister corelisters.NodeLister, pLister corelisters.PodLister) *SchedulerCache {
@@ -50,22 +47,17 @@ func (cache *SchedulerCache) GetNodeinfos() []*NodeInfo {
 	return nodes
 }
 
-func (cache *SchedulerCache) GetInterferenceValue(foreground int,  background int) float64 {
-	val := cache.interference[foreground][background]
-	return val
-}
-func (cache *SchedulerCache) GetPendingPods() []*v1.Pod{
+func (cache *SchedulerCache) GetPendingPods() []*v1.Pod {
 	pods, _ := cache.podLister.List(labels.Everything())
 	result := []*v1.Pod{}
 	for _, pod := range pods {
 		if pod.Status.Phase == v1.PodPending {
-		result = append(result,pod)
+			result = append(result, pod)
 		}
 	}
 
 	return result
 }
-
 
 // build cache when initializing
 func (cache *SchedulerCache) BuildCache() error {
