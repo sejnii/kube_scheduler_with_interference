@@ -7,7 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"time"
+//	"time"
 
 	"github.com/julienschmidt/httprouter"
 
@@ -79,9 +79,9 @@ func PredicateRoute(predicate *scheduler.Predicate) httprouter.Handle {
 				Error:       err.Error(),
 			}
 		} else {
-			startTime := time.Now()
-			log.Printf("debug: scheduling start time = %s", startTime)
-			log.Printf("debug: gpusharingfilter ExtenderArgs =%v", extenderArgs)
+			//startTime := time.Now()
+		//	log.Printf("debug: scheduling start time = %s", startTime)
+		//	log.Printf("debug: gpusharingfilter ExtenderArgs =%v", extenderArgs)
 			extenderFilterResult = predicate.Handler(extenderArgs)
 		}
 

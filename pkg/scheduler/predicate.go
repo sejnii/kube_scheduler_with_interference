@@ -7,6 +7,7 @@ import (
 	"k8s.io/api/core/v1"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
 //	queue "k8s.io/kubernetes/pkg/scheduler"
+	"log"
 )
 
 type Predicate struct {
@@ -68,6 +69,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 				for runningPod := range onePodNode {
 					candidate = append(candidate, interferencePair{pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID) + p.cache.GetInterferenceValue(pendingID, runningPod)})
 					runningApp[runningPod] = false
+					log.Println("predicate : 71 - for loop", pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID))
 				}
 
 			} // mystic select the largest value (the larger value, the more different metric vector)
@@ -75,7 +77,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 				return (candidate[i].value > candidate[j].value)
 			})
 			result := make([]interferencePair, 0)
-
+			log.Println("predicate: 79 - sorted candidate", candidate)
 			for _, pair := range candidate {
 				if pendingApp[pair.foreground] != true && runningApp[pair.background] != true && pair.value != -2 {
 					result = append(result, pair)

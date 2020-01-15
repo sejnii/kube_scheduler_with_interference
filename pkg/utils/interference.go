@@ -9,7 +9,8 @@ import (
 func GetInterferenceMap() map[int]map[int]float64 {
 	path, _ := os.Getwd()
 	log.Printf("pwd %v", path)
-	file, err := os.Open("/data/interference.json")
+	// json file mount -> yaml (volume)
+	file, err := os.Open("/data/mystic_interference.json")
 	if err != nil {
 		log.Printf("json file reading fail %v", err)
 	}
@@ -29,7 +30,7 @@ func GetInterferenceMap() map[int]map[int]float64 {
 
 		interference[fore] = tmp
 	}
-
+	log.Println("interference.go - 32 get interferencemap ", interferenceTmp)
 	return interference
 }
 

@@ -192,15 +192,15 @@ func (c *Controller) syncPod(key string) (forget bool, err error) {
 		log.Printf("warn: unable to retrieve pod %v from the store: %v", key, err)
 	default:
 		if utils.IsCompletePod(pod) {
-			log.Printf("debug: pod %s in ns %s has completed.", name, ns)
+			//log.Printf("debug: pod %s in ns %s has completed.", name, ns)
 			c.schedulerCache.RemovePod(pod)
 		} else {
 			err := c.schedulerCache.AddOrUpdatePod(pod)
 
-			elapsedTime := time.Since(startTime)
-			log.Printf("debug : begin processNextWorkItem ~ addorupdatepod end  time is = %s", elapsedTime)
-			endTime := time.Now()
-			log.Printf("debug : addorupdatepod end time is = %s", endTime)
+			//elapsedTime := time.Since(startTime)
+		//	log.Printf("debug : begin processNextWorkItem ~ addorupdatepod end  time is = %s", elapsedTime)
+			//endTime := time.Now()
+		//	log.Printf("debug : addorupdatepod end time is = %s", endTime)
 
 			if err != nil {
 				return false, err
@@ -212,12 +212,12 @@ func (c *Controller) syncPod(key string) (forget bool, err error) {
 }
 
 func printDuration(t time.Time) {
-	elapsedTime := time.Since(startTime)
-	log.Printf("debug : begin ~ end processNextWorkItem time is = %s", elapsedTime)
+	//elapsedTime := time.Since(startTime)
+	//log.Printf("debug : begin ~ end processNextWorkItem time is = %s", elapsedTime)
 }
 func printNow(){
-	endTime := time.Now()
-        log.Printf("debug : end processNextWorkItem time is = %s", endTime)
+	//endTime := time.Now()
+        //log.Printf("debug : end processNextWorkItem time is = %s", endTime)
 
 }
 // processNextWorkItem will read a single work item off the podQueue and
@@ -226,7 +226,7 @@ func (c *Controller) processNextWorkItem() bool {
 
 	log.Println("begin processNextWorkItem()")
 	startTime = time.Now()
-	log.Printf("debug : begin processNextWorkItem() time is = %s", startTime)
+	//log.Printf("debug : begin processNextWorkItem() time is = %s", startTime)
 	key, quit := c.podQueue.Get()
 	if quit {
 		return false
