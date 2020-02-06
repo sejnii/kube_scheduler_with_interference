@@ -2,10 +2,11 @@ package scheduler
 
 import (
 	"sort"
-
+	v1 "k8s.io/api/core/v1"
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/utils"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/api"
+	
 	//	queue "k8s.io/kubernetes/pkg/scheduler"
 )
 
@@ -42,11 +43,11 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 				zeroPodGPU, possibleGPU, containerID := nodeinfo.AssumeWithNumPods()
 				if zeroPodGPU == true {
 					currentPod := utils.GetContainerID(pod)
-					if currentPod == GROMACS {
+					if currentPod == 1 { //gmx
 						if nodeName == "dccgpu" {
 							selected = nodeName
 						}
-					} else if currentPod == QMCPACK {
+					} else if currentPod == 3 { // qmcpack
 						if nodeName == "ubuntu" || nodeName == "dccgpu" {
 							selected = nodeName
 						}
