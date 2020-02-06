@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"math"
 	"sort"
 
 	"github.com/AliyunContainerService/gpushare-scheduler-extender/pkg/cache"
@@ -71,20 +72,39 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 			pendingApp := make(map[int]bool) //pendingAPP ID + visited(bool) map
 			runningApp := make(map[int]bool)
 			pendingPods := p.cache.GetPendingPods()
-
+			over100 := false
 			candidate := make([]interferencePair, 0)
 			for _, pPod := range pendingPods {
 				pendingID := utils.GetContainerID(pPod)
 				pendingApp[pendingID] = false // visited array for pending pod
 				for runningPod := range onePodNode {
-					candidate = append(candidate, interferencePair{pendingID, runningPod, p.cache.GetInterferenceValue(runningPod, pendingID) + p.cache.GetInterferenceValue(pendingID, runningPod)})
+					sum := p.cache.GetUtilValue(runningPod) + p.cache.GetUtilValue(runningPod)
+					candidate = append(candidate, interferencePair{pendingID, runningPod, sum})
+					if sum > 100 {
+						over100 = true
+					}
 					runningApp[runningPod] = false
 				}
 
-			} //candidate struct: runningPod in onepodnode, pendingPod, sum of interference value
-			sort.Slice(candidate, func(i, j int) bool {
-				return (candidate[i].value < candidate[j].value)
-			})
+			}
+			if over100 == false { //if sum of gpu util is lower than 100%, select the biggest one
+				sort.Slice(candidate, func(i, j int) bool {
+					return (candidate[i].value > candidate[j].value)
+				})
+			} else { //if sum of gpu util is lower than 100%, select the closest one from 100%
+				for i := 0; i < len(candidate)-1; i++ {
+					min := i
+					for j := i + 1; j < len(candidate); j++ {
+						if math.Abs(candidate[min].value-100) > math.Abs(candidate[j].value-100) {
+							min = j
+						}
+						tmp := candidate[min]
+						candidate[min] = candidate[i]
+						candidate[i] = tmp
+					}
+				}
+			}
+
 			result := make([]interferencePair, 0)
 
 			for _, pair := range candidate {

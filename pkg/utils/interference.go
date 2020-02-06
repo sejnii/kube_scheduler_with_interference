@@ -1,36 +1,23 @@
 package utils
 
-import (
-	"encoding/json"
-	"log"
-	"os"
-)
+func GetUtil() map[int]float64 {
 
-func GetInterferenceMap() map[int]map[int]float64 {
-	path, _ := os.Getwd()
-	log.Printf("pwd %v", path)
-	file, err := os.Open("/data/interference.json")
-	if err != nil {
-		log.Printf("json file reading fail %v", err)
-	}
-	fi, _ := file.Stat()
-	var data = make([]byte, fi.Size())
-	file.Read(data)
-	interferenceTmp := make(map[string]map[string]float64)
-	json.Unmarshal(data, &interferenceTmp)
-	interference := make(map[int]map[int]float64)
-	for foreApp, backApps := range interferenceTmp {
-		fore := strToID(foreApp)
-		tmp := make(map[int]float64)
-		for backApp, val := range backApps {
-			back := strToID(backApp)
-			tmp[back] = val
-		}
-
-		interference[fore] = tmp
+	util := map[int]float64{
+		LAMMPS:         25,
+		GROMACS:        69,
+		HOOMD:          97.69,
+		QMCPACK:        46.7,
+		CNN:            92.02,
+		Google:         90.65,
+		Alex:           92.6,
+		VGG16:          82.83,
+		VGG11:          97.23,
+		Classification: 13.4,
+		Multiout:       11.72,
+		Regression:     11.91,
 	}
 
-	return interference
+	return util
 }
 
 func strToID(s string) int {
